@@ -149,7 +149,7 @@ function render(list){
   const R=el('results');
   if(!list.length){R.innerHTML='<div class="empty">No programs match yet. Try widening the budget or clearing the field of study.</div>';return;}
   R.innerHTML = `<div class="rhead"><h2>Matches</h2><span class="c">${list.length} program${list.length>1?'s':''}, best fit first</span></div>
-    <div class="exportbar"><button class="expbtn" id="expbtn">⬗ Export these to a Google Doc</button><span class="expout" id="expout"></span></div>`+
+    <div class="exportbar"><button class="expbtn" id="expbtn">⬗ Export these to a spreadsheet (Excel)</button><span class="expout" id="expout"></span></div>`+
     list.map((x,i)=>{const d=x.d;
       const careers = d.careers.map(c=>{
         const pr=c.pr.map(p=>`<span class="pr ${x.inp.pr&&p===x.inp.pr?'hit':''}">${p}</span>`).join(' ');
@@ -172,13 +172,13 @@ function render(list){
 async function exportDoc(list){
   const out=el('expout');
   if(!EXPORT){out.className='expout bad';out.textContent='Export isn\'t connected yet — ask your ISC admin to finish the one-time setup.';return;}
-  out.className='expout';out.textContent='Generating Google Doc…';
+  out.className='expout';out.textContent='Generating spreadsheet…';
   const payload={title:'ISC — Program Options'+(lastQuery?': '+lastQuery:''),query:lastQuery,
     matches:list.map(x=>({name:x.d.name,uni:x.d.uni,level:x.d.level,fee:money(x.d.fee)+'/yr',ielts:(x.d.ielts||'—')+'',states:x.d.states.join('/'),careers:x.d.careers}))};
   try{
     const r=await fetch(EXPORT,{method:'POST',body:JSON.stringify(payload)});
     const j=await r.json();
-    if(j&&j.ok){out.className='expout ok';out.innerHTML='✓ Doc ready: <a href="'+j.url+'" target="_blank" rel="noopener">Open the Google Doc</a> <button class="copybtn" id="cpy">Copy link</button>';el('cpy').onclick=()=>{navigator.clipboard.writeText(j.url);el('cpy').textContent='Copied ✓';};}
+    if(j&&j.ok){out.className='expout ok';out.innerHTML='✓ Spreadsheet ready: <a href="'+j.url+'" target="_blank" rel="noopener">Open in Google Sheets</a> <button class="copybtn" id="cpy">Copy link</button>';el('cpy').onclick=()=>{navigator.clipboard.writeText(j.url);el('cpy').textContent='Copied ✓';};}
     else{out.className='expout bad';out.textContent='Export failed: '+((j&&j.error)||'unknown error');}
   }catch(err){out.className='expout bad';out.textContent='Couldn\'t reach the export service ('+err+').';}
 }
