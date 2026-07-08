@@ -1,2 +1,4 @@
+# Allow crawling so Google can read the page's <meta name="robots" content="noindex">
+# and drop it from the index. Blocking here would hide the noindex directive.
 User-agent: *
-Disallow: /
+Disallow:
